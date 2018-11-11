@@ -36,6 +36,8 @@ def setup_callbacks(path_config: configparser.ConfigParser,
                     use_lr_reduction: bool = False):
     """ Generates a list of useful callbacks.
     # Arguments:
+        path_config: configparser.ConfigParser
+            configuration which should contain absolute paths to models and logs
         weights_file_name: string
             filename prefix for the saved weights
         checkpoint_period: integer
@@ -54,16 +56,16 @@ def setup_callbacks(path_config: configparser.ConfigParser,
     callbacks.append(learning_rate_tracker)
 
     if checkpoint_period > 0:
-        file_path = model_dir + weights_file_name + '.{epoch:02d}-{val_intersection_of_union:.4f}.hdf5'
+        file_path = model_dir + weights_file_name + '.{epoch:02d}-{val_intersection_over_union:.4f}.hdf5'
         model_checkpoint = ModelCheckpoint(filepath=file_path,
-                                           monitor='val_intersection_of_union',
+                                           monitor='val_intersection_over_union',
                                            verbose=1,
                                            mode='max',
                                            period=checkpoint_period)
         callbacks.append(model_checkpoint)
 
     if use_lr_reduction:
-        reduce_lr_callback = ReduceLROnPlateau(monitor='val_intersection_of_union',
+        reduce_lr_callback = ReduceLROnPlateau(monitor='val_intersection_over_union',
                                                factor=1.0,
                                                patience=10,
                                                verbose=1,

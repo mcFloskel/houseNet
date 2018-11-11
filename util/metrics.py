@@ -2,7 +2,7 @@ import tensorflow as tf
 
 
 def intersection_over_union(y_true, y_pred):
-    """ Calculates intersection over union metrics for two classes.
+    """ Calculates intersection over union metric for two classes.
     """
 
     score, up_opt = tf.metrics.mean_iou(y_true, y_pred, 2)

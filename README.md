@@ -13,7 +13,7 @@ Keep in mind that this project was designed with the GPU version of Tensorflow a
 The train.py file can be used to start training if you have a suitable dataset available and created a configuration file.
 
 ## Dataset
-Current testings are done on down-sampled versions of the images from the mapping-challenge.
+Current testings are done on down-sampled versions of the images from the mapping challenge.
 The images were converted to [NumPy](http://www.numpy.org/) arrays with the shape (150, 150, 3) and stored in single .npy files.
 During training they are loaded in batches and randomly flipped or rotated.
 
@@ -25,10 +25,10 @@ The file should contain the following content:
 
 ```ini
 [DIRECTORIES]
-train_data  = /path/to/data/train
-val_data    = /path/to/data/val
+train_data  = /path/to/data/train/
+val_data    = /path/to/data/val/
 models      = /path/to/models/
-logs        = /path/to/logs
+logs        = /path/to/logs/
 ```
 
 ## Current state

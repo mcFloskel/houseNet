@@ -34,7 +34,7 @@ class Network:
         """Trains the model.
 
         # Arguments:
-            path_config:
+            path_config: configParser.ConfigParser
                 configuration which contains absolute paths to train_data, val_data, models, logs
             weights_file_name: string
                 filename for the saved weights
