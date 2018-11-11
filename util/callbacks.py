@@ -7,7 +7,7 @@ from keras.optimizers import Adam, SGD, RMSprop, Adagrad, Adadelta
 
 class LearningRateTracker(Callback):
     """ Tracks the current learning rate and prints it after each epoch.
-    This tracker actually just performs the keras calculation.
+    This tracker actually just performs the Keras calculation.
     """
 
     def on_epoch_end(self, epoch, logs=None):
@@ -36,7 +36,7 @@ def setup_callbacks(path_config: configparser.ConfigParser,
                     use_lr_reduction: bool = False):
     """ Generates a list of useful callbacks.
     # Arguments:
-        path_config: configparser.ConfigParser
+        path_config: ConfigParser
             configuration which should contain absolute paths to models and logs
         weights_file_name: string
             filename prefix for the saved weights
