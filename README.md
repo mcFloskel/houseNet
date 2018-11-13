@@ -35,4 +35,3 @@ logs        = /path/to/logs/
 This project is currently "work in progress" and will get some updates in the future.
 However many tasks have already been completed and the work can now be focused on testing
 different network architectures (especially using dilated convolutions).
-For this the **Network** base class can be used which separates the training configurations from the architecture.

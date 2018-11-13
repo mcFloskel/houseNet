@@ -1,5 +1,5 @@
 from keras import Input, Model
-from keras.layers import MaxPooling2D, Conv2D, UpSampling2D, concatenate, ZeroPadding2D
+from keras.layers import MaxPooling2D, Conv2D, UpSampling2D, ZeroPadding2D, Concatenate
 
 from networks.blocks.conv_block import convolution_block
 
@@ -29,15 +29,15 @@ def UNet3():
 
     # Up
     vert_up = UpSampling2D(size=2, name='vert_up')(block_vert)
-    conc_ver_bot = concatenate([vert_up, block_bot])
-    block_bot_up = convolution_block(input_layer=conc_ver_bot, filters=128, name='block_bot_up')
+    conc_vert_bot = Concatenate(name='conc_vert_bot')([vert_up, block_bot])
+    block_bot_up = convolution_block(input_layer=conc_vert_bot, filters=128, name='block_bot_up')
 
     bot_up = UpSampling2D(size=2, name='bot_up')(block_bot_up)
-    conc_bot_mid = concatenate([bot_up, block_mid])
+    conc_bot_mid = Concatenate(name='conc_bot_mid')([bot_up, block_mid])
     block_mid_up = convolution_block(input_layer=conc_bot_mid, filters=64, name='block_mid_up')
 
     mid_up = UpSampling2D(size=2, name='mid_up')(block_mid_up)
-    conc_mid_top = concatenate([mid_up, block_top])
+    conc_mid_top = Concatenate(name='conc_mid_top')([mid_up, block_top])
     block_top_up = convolution_block(input_layer=conc_mid_top, filters=32, last_padding_valid=True,
                                      name='block_top_up')
 
