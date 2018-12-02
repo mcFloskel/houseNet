@@ -6,8 +6,7 @@ from networks.blocks.conv_block import convolution_block
 
 def UNet3():
     """ UNet-like architecture with three pooling steps.
-    This particular architecture was designed for processing data with
-    (150, 150, 3) input shape and (150, 150, 1) output shape.
+    This network processes data with an input shape of (150, 150, 3) and an output shape of (150, 150, 1).
 
     # Returns:
         A Keras Model

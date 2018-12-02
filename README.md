@@ -3,7 +3,8 @@
 ## Overview
 This neural network project was created to evaluate the effect of dilated convolutions on a semantic segmentation task.
 The dataset from the [crowdAI Mapping Challenge](https://www.crowdai.org/challenges/mapping-challenge)
-will be used to test dilated convolutions for binary segmentation. 
+will be used to test dilated convolutions for binary segmentation.
+Check out the [wiki](https://github.com/mcFloskel/houseNet/wiki) for further explanations. 
 
 ## Usage
 The neural network for this project was programmed by using [Keras](https://keras.io/) with the [Tensorflow](https://www.tensorflow.org/) backend.

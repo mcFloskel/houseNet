@@ -10,12 +10,12 @@ from util.tf_utils import initialize_tf_variables
 def train_network(model: Model,
                   path_config: configparser.ConfigParser,
                   weights_file_name: str,
-                  pre_trained_model_file_name: str = '',
                   batch_size: int = 32,
                   epochs: int = 50,
                   random_state: int = None,
                   checkpoint_period: int = 10,
-                  verbose: int = 1):
+                  verbose: int = 1,
+                  initial_epoch: int = 0):
     """Trains the model.
 
     # Arguments:
@@ -60,11 +60,9 @@ def train_network(model: Model,
     print('Setting up callbacks ...')
     callbacks = setup_callbacks(path_config, weights_file_name, checkpoint_period)
 
-    print('Initialize tf variables ...')
-    initialize_tf_variables()
-    if pre_trained_model_file_name != '':
-        print('Loading pre-trained model ...')
-        model.load_weights(pre_trained_model_file_name)
+    if initial_epoch == 0:
+        print('Initialize tf variables ...')
+        initialize_tf_variables()
 
     print('Start training ...')
     model.fit_generator(generator=train_data_loader,
@@ -73,4 +71,5 @@ def train_network(model: Model,
                         callbacks=callbacks,
                         validation_data=val_data_loader,
                         workers=6,
-                        use_multiprocessing=True)
+                        use_multiprocessing=True,
+                        initial_epoch=initial_epoch)
