@@ -5,7 +5,7 @@ from networks.blocks.conv_block import convolution_block
 
 
 def DNet():
-    """ Fully Convolutional Neural Network which uses dilated convolutions instead of pooling
+    """Fully Convolutional Neural Network which uses dilated convolutions instead of pooling
     to increase the perceptive field without decreasing the resolution for the subsequent layers.
     This network processes data with an input shape of (150, 150, 3) and an output shape of (150, 150, 1).
 

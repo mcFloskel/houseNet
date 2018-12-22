@@ -19,6 +19,7 @@ def RNet():
     # Returns:
         A Keras Model
     """
+
     input_layer = Input(shape=(150, 150, 3), name='input_layer')
     input_padded = ZeroPadding2D(name='input_padded')(input_layer)
     conv_1 = Conv2D(filters=16, kernel_size=7, activation='relu', padding='same', name='conv_1')(input_padded)
