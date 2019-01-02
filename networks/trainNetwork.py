@@ -2,7 +2,7 @@ import configparser
 
 from keras import Model
 
-from util.augmentation import NumpyDataLoader
+from util.data_loader import NumpyDataLoader
 from util.callbacks import setup_callbacks
 from util.tf_utils import initialize_tf_variables
 
