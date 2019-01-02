@@ -8,17 +8,22 @@ Check out the [wiki](https://github.com/mcFloskel/houseNet/wiki) for further exp
 
 ## Usage
 The neural network for this project was programmed by using [Keras](https://keras.io/) with the [Tensorflow](https://www.tensorflow.org/) backend.
-The project code should be usable if you have installed Keras and Tensorflow.
+Loading and visualizing image data is done with [OpenCV](https://opencv.org/).
+The scripts should be usable if you have installed the above mentioned packages.
 Keep in mind that this project was designed with the GPU version of Tensorflow and training will be slow or may not work at all with your CPU.
 
-The train.py file can be used to start training if you have a suitable dataset available and created a configuration file.
+The train.py file can be used to start training if you have the mapping-challenge dataset available and created a configuration file.
 
 ## Dataset
-Current testings are done on down-sampled versions of the images from the mapping challenge.
-The images were converted to [NumPy](http://www.numpy.org/) arrays with the shape (150, 150, 3) and stored in single .npy files.
-During training they are loaded in batches and randomly flipped or rotated.
+A description of the dataset can be found [here](https://github.com/crowdAI/mapping-challenge-starter-kit).
+The intended training/tests will be conducted with down-sampled images with the shape (150, 150, 3).
+The dataset is loaded sequentially during training by using the [DataLoader](https://github.com/mcFloskel/houseNet/blob/master/util/data_loader.py).
+The images/labels are loaded in batches and are randomly flipped or rotated.
 
-The code for generating such a dataset will be published in the future.
+Previous training/testing was done on down-sampled versions of the images from the mapping challenge.
+The images were converted to [NumPy](http://www.numpy.org/) arrays with the shape (150, 150, 3) and stored in single .npy files.
+If you convert the data and labels to numpy arrays you can use the [NumpyDataLoader](https://github.com/mcFloskel/houseNet/blob/master/util/data_loader.py) for training.
+
 
 ## Configuration
 For loading the training/validation data a .ini file is read.
@@ -33,6 +38,8 @@ logs        = /path/to/logs/
 ```
 
 ## Current state
-This project is currently "work in progress" and will get some updates in the future.
-However many tasks have already been completed and the work can now be focused on testing
-different network architectures (especially using dilated convolutions).
+A lot of architectures have already been tested and the most promising have been uploaded.
+The current work is focused on creating a meaningful evaluation.
+An update for the wiki is also planned.
+
+Go to [issues](https://github.com/mcFloskel/houseNet/issues) to see a list of open tasks.
