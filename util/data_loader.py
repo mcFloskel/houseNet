@@ -47,7 +47,7 @@ class DataLoader(Sequence):
         self.height = self.coco.loadImgs(0)[0]['height']
         self.width = self.coco.loadImgs(0)[0]['width']
         self.data_shape = (self.height, self.width, 3)
-        self.labels_shape = (self.height, self.width)
+        self.labels_shape = (self.height, self.width, 1)
 
         # Init random state
         if isinstance(random_state, np.random.RandomState):
@@ -92,6 +92,10 @@ class DataLoader(Sequence):
             data[i,] = x
             labels[i,] = y
 
+        if self.down_sample_factor > 1:
+            data = self._down_sample(data)
+            labels = self._down_sample(labels)
+
         return data, labels
 
     def on_epoch_end(self):
@@ -101,8 +105,6 @@ class DataLoader(Sequence):
     def _get_image(self, image_id):
         path = self.coco.loadImgs([image_id])[0]['file_name']
         image = cv2.imread(os.path.join(self.directory, path)) / 255
-        if self.down_sample_factor > 1:
-            image = self._down_sample(image)
         return image
 
     def _get_labels(self, image_id):
@@ -112,15 +114,13 @@ class DataLoader(Sequence):
             rle = mask.frPyObjects(a['segmentation'], self.height, self.width)
             m = np.squeeze(mask.decode(rle))
             labels = np.logical_or(labels, m)
+        return labels.reshape((*labels.shape, 1))
 
-        if self.down_sample_factor > 1:
-            labels = self._down_sample(labels)
-        return labels
-
-    def _down_sample(self, image):
-        image = np.delete(image, list(range(1, image.shape[0], self.down_sample_factor)), axis=0)
-        image = np.delete(image, list(range(1, image.shape[1], self.down_sample_factor)), axis=1)
-        return image
+    def _down_sample(self, batch):
+        # shape: (batch_size, height, width, channels)
+        batch = np.delete(batch, list(range(1, batch.shape[1], self.down_sample_factor)), axis=1)
+        batch = np.delete(batch, list(range(1, batch.shape[2], self.down_sample_factor)), axis=2)
+        return batch
 
 
 class NumpyDataLoader(Sequence):
