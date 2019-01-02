@@ -4,14 +4,14 @@ import numpy as np
 from analysis.effective_receptive_field import get_effective_receptive_field
 from networks.dnet import DNet
 
-""" Example of calculating the effective receptive field and visualizing it with opencv.
+"""Example of calculating the effective receptive field and visualizing it with opencv.
 """
 
 
 def prepare_receptive_field(receptive_field: np.ndarray,
                             up_scale_factor: int = 1,
                             grey_scale: bool = False):
-    """Generate an numpy array which can be visualized or saved with cv2 functions.
+    """Generates an numpy array which can be visualized or saved with cv2 functions.
 
     # Arguments:
         receptive_field: Numpy array
@@ -19,7 +19,7 @@ def prepare_receptive_field(receptive_field: np.ndarray,
         up_scale_factor: int
             factor to use for up-scaling
         grey_scale: bool
-            Convert array to gray values (mean over all color channels)
+            convert array to gray values (mean over all channels)
 
     # Returns:
         A Numpy array
