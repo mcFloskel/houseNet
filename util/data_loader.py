@@ -7,7 +7,7 @@ from pycocotools import mask
 from pycocotools.coco import COCO
 
 
-class PngLoader(Sequence):
+class DataLoader(Sequence):
     """Loads data/labels from a coco annotated dataset.
     The images are stored in the 'images/' directory and the annotations in the 'annotation.json' file.
 
@@ -28,7 +28,7 @@ class PngLoader(Sequence):
             state which will be used for shuffling and augmentation
     """
 
-    def __init__(self: 'PngLoader',
+    def __init__(self: 'DataLoader',
                  data_directory: str,
                  batch_size: int = 32,
                  shuffle: bool = True,
