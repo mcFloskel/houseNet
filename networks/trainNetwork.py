@@ -1,8 +1,9 @@
 import configparser
+import numpy as np
 
 from keras import Model
 
-from util.data_loader import NumpyDataLoader
+from util.data_loader import DataLoader
 from util.callbacks import setup_callbacks
 from util.tf_utils import initialize_tf_variables
 
@@ -12,7 +13,8 @@ def train_network(model: Model,
                   weights_file_name: str,
                   batch_size: int = 32,
                   epochs: int = 50,
-                  random_state: int = None,
+                  train_random_state: np.random.RandomState = None,
+                  val_random_state: np.random.RandomState = None,
                   checkpoint_period: int = 10,
                   verbose: int = 1,
                   initial_epoch: int = 0):
@@ -47,15 +49,17 @@ def train_network(model: Model,
         return
 
     print('Setting up data loader ...')
-    train_data_loader = NumpyDataLoader(data_directory=path_config['DIRECTORIES']['train_data'],
-                                        batch_size=batch_size,
-                                        random_state=random_state)
+    train_data_loader = DataLoader(data_directory=path_config['DIRECTORIES']['train_data'],
+                                   batch_size=batch_size,
+                                   down_sample_factor=2,
+                                   random_state=train_random_state)
 
-    val_data_loader = NumpyDataLoader(data_directory=path_config['DIRECTORIES']['val_data'],
-                                      batch_size=batch_size,
-                                      shuffle=False,
-                                      augment=False,
-                                      random_state=random_state)
+    val_data_loader = DataLoader(data_directory=path_config['DIRECTORIES']['val_data'],
+                                 batch_size=batch_size,
+                                 shuffle=False,
+                                 augment=False,
+                                 down_sample_factor=2,
+                                 random_state=val_random_state)
 
     print('Setting up callbacks ...')
     callbacks = setup_callbacks(path_config, weights_file_name, checkpoint_period)

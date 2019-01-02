@@ -1,4 +1,5 @@
 import configparser
+import numpy as np
 
 from keras.metrics import binary_accuracy
 from keras.optimizers import Adam
@@ -18,7 +19,8 @@ train_network(model=net,
               path_config=config,
               weights_file_name=weights_file_name,
               batch_size=8,
-              random_state=2009,
+              train_random_state=np.random.RandomState(2009),
+              val_random_state=np.random.RandomState(2013),
               epochs=50,
               checkpoint_period=10,
               verbose=2)
