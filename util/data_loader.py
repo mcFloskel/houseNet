@@ -37,15 +37,20 @@ class DataLoader(Sequence):
                  subset_size: int = 0,
                  random_state: np.random.RandomState = None):
         self.directory = os.path.join(data_directory, 'images')
-        self.coco = COCO(os.path.join(data_directory, 'annotation.json'))
+        self.coco = COCO(os.path.join(data_directory, 'annotation-small.json'))
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.augment = augment
         self.down_sample_factor = down_sample_factor
 
+        # Get ids
+        self.image_ids = self.coco.getImgIds()
+        if 0 < subset_size < len(self.image_ids):
+            self.image_ids = self.random_state.choice(self.image_ids, subset_size)
+
         # Get data shape
-        self.height = self.coco.loadImgs(0)[0]['height']
-        self.width = self.coco.loadImgs(0)[0]['width']
+        self.height = self.coco.loadImgs(self.image_ids[0])[0]['height']
+        self.width = self.coco.loadImgs(self.image_ids[0])[0]['width']
         self.data_shape = (self.height, self.width, 3)
         self.labels_shape = (self.height, self.width, 1)
 
@@ -54,11 +59,6 @@ class DataLoader(Sequence):
             self.random_state = random_state
         else:
             self.random_state = np.random.RandomState()
-
-        # Get ids
-        self.image_ids = self.coco.getImgIds()
-        if 0 < subset_size < len(self.image_ids):
-            self.image_ids = self.random_state.choice(self.image_ids, subset_size)
 
     def __len__(self):
         return int(np.floor(len(self.image_ids) / self.batch_size))
