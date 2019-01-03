@@ -43,6 +43,12 @@ class DataLoader(Sequence):
         self.augment = augment
         self.down_sample_factor = down_sample_factor
 
+        # Init random state
+        if isinstance(random_state, np.random.RandomState):
+            self.random_state = random_state
+        else:
+            self.random_state = np.random.RandomState()
+
         # Get ids
         self.image_ids = self.coco.getImgIds()
         if 0 < subset_size < len(self.image_ids):
@@ -53,12 +59,6 @@ class DataLoader(Sequence):
         self.width = self.coco.loadImgs(self.image_ids[0])[0]['width']
         self.data_shape = (self.height, self.width, 3)
         self.labels_shape = (self.height, self.width, 1)
-
-        # Init random state
-        if isinstance(random_state, np.random.RandomState):
-            self.random_state = random_state
-        else:
-            self.random_state = np.random.RandomState()
 
     def __len__(self):
         return int(np.floor(len(self.image_ids) / self.batch_size))
