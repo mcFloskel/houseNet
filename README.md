@@ -48,4 +48,6 @@ Go to [issues](https://github.com/mcFloskel/houseNet/issues) to see a list of op
 Below you can see an example prediction of the [rNet](https://github.com/mcFloskel/houseNet/blob/master/networks/rNet.py) architecture.
 (Left to right: original image, ground truth, prediction)
 
-![Example Prediction](https://github.com/mcFloskel/houseNet/blob/master/images/prediction_rnet.png)
+<p align="center">
+  <img src="https://github.com/mcFloskel/houseNet/blob/master/images/prediction_rnet.png"/>
+</p>

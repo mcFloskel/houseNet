@@ -14,14 +14,16 @@ def visualize(images, ground_truth, predictions):
     ground_truth = [cv2.cvtColor(gt.astype(np.uint8) * 255, cv2.COLOR_GRAY2BGR) for gt in ground_truth]
     predictions = [cv2.cvtColor(p.astype(np.uint8) * 255, cv2.COLOR_GRAY2BGR) for p in predictions]
 
-    collection = np.ones((750, 550, 3), dtype=np.uint8) * 50
+    collection = np.ones((800, 600, 3), dtype=np.uint8) * 50
     for i in range(len(images)):
-        pos = i * 200
-        collection[pos: pos + 150, 0:150, :] = images[i]
-        collection[pos: pos + 150, 200:350, :] = ground_truth[i]
-        collection[pos: pos + 150, 400:550, :] = predictions[i]
+        pos = i * 200 + 25
+        collection[pos: pos + 150, 25:175, :] = images[i]
+        collection[pos: pos + 150, 225:375, :] = ground_truth[i]
+        collection[pos: pos + 150, 425:575, :] = predictions[i]
     cv2.imshow('Example Prediction', collection)
-    cv2.waitKey(0)
+    key = cv2.waitKey(0)
+    if key != 27:
+        cv2.imwrite('/home/flo/uni/wise18/projekt/houseNet/images/prediction_rnet.png', collection)
     cv2.destroyAllWindows()
 
 
