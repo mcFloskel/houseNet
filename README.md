@@ -43,3 +43,9 @@ The current work is focused on creating a meaningful evaluation.
 An update for the wiki is also planned.
 
 Go to [issues](https://github.com/mcFloskel/houseNet/issues) to see a list of open tasks.
+
+## Example
+Below you can see an example prediction of the [rNet](https://github.com/mcFloskel/houseNet/blob/master/networks/rNet.py) architecture.
+(Left to right: original image, ground truth, prediction)
+
+![Example Prediction](https://github.com/mcFloskel/houseNet/blob/master/images/prediction_rnet.png)
