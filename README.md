@@ -35,6 +35,7 @@ train_data  = /path/to/data/train/
 val_data    = /path/to/data/val/
 models      = /path/to/models/
 logs        = /path/to/logs/
+predictions = /path/to/predictions/
 ```
 
 ## Current state

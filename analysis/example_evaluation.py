@@ -1,44 +1,40 @@
 import configparser
-import cv2
+import json
 import os
-import numpy as np
 
+from keras import Model
 from keras.engine.saving import load_model
+from keras.layers import UpSampling2D
 
 from analysis.evaluation import Evaluator
+
 from util.losses import dice
 from util.metrics import intersection_over_union
 
+# Get config
+config = configparser.ConfigParser()
+config.read(os.path.join(os.path.pardir, 'config.ini'))
 
-def visualize(images, ground_truth, predictions):
-    ground_truth = [cv2.cvtColor(gt.astype(np.uint8) * 255, cv2.COLOR_GRAY2BGR) for gt in ground_truth]
-    predictions = [cv2.cvtColor(p.astype(np.uint8) * 255, cv2.COLOR_GRAY2BGR) for p in predictions]
+# Build all paths
+path_to_model = os.path.join(config['DIRECTORIES']['models'], 'my_rNet.hdf5')
+path_to_predictions = os.path.join(config['DIRECTORIES']['predictions'], 'rNet_prediction.json')
+path_to_dataset = config['DIRECTORIES']['val_data']
 
-    collection = np.ones((800, 600, 3), dtype=np.uint8) * 50
-    for i in range(len(images)):
-        pos = i * 200 + 25
-        collection[pos: pos + 150, 25:175, :] = images[i]
-        collection[pos: pos + 150, 225:375, :] = ground_truth[i]
-        collection[pos: pos + 150, 425:575, :] = predictions[i]
-    cv2.imshow('Example Prediction', collection)
-    key = cv2.waitKey(0)
-    if key != 27:
-        cv2.imwrite('/home/flo/uni/wise18/projekt/houseNet/images/prediction_rnet.png', collection)
-    cv2.destroyAllWindows()
+# Load model
+custom_objects = {'dice': dice, 'intersection_over_union': intersection_over_union}
+my_model = load_model(path_to_model, custom_objects=custom_objects)
+
+# Up sample model output -> model was trained on images with shape (150, 150)
+up_sampler = UpSampling2D()(my_model.output)
+model_wrapper = Model(my_model.input, up_sampler)
 
 
-if __name__ == '__main__':
-    # Get config
-    config = configparser.ConfigParser()
-    config.read(os.path.join(os.path.pardir, 'config.ini'))
+# Initialize evaluator
+evaluator = Evaluator(path_to_dataset, model_wrapper)
 
-    # Load model
-    PATH_TO_MODEL = os.path.join(config['DIRECTORIES']['models'], 'my_rNet.hdf5')
-    custom_objects = {'dice': dice, 'intersection_over_union': intersection_over_union}
-    my_model = load_model(PATH_TO_MODEL, custom_objects=custom_objects)
+# Can be skipped if you have already saved the predictions
+# evaluator.save_predictions_as_json(path_to_predictions)
 
-    # Evaluate and visualize
-    PATH_TO_DATA = config['DIRECTORIES']['val_data']
-    evaluator = Evaluator(PATH_TO_DATA, my_model, np.random.RandomState(2013))
-    data = evaluator.get_random_prediction()
-    visualize(*data)
+# Evaluate
+prediction_annotations = json.loads(open(path_to_predictions).read())
+evaluator.evaluate(prediction_annotations)

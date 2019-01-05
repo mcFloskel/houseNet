@@ -1,3 +1,5 @@
+import json
+
 import cv2
 import os
 import keras
@@ -5,6 +7,9 @@ import numpy as np
 
 from pycocotools import mask
 from pycocotools.coco import COCO
+from pycocotools.cocoeval import COCOeval
+
+from util.array_utils import image_as_array
 
 
 class Evaluator:
@@ -15,92 +20,77 @@ class Evaluator:
             absolute path to validation directory
         model: keras.Model
             trained model
-        random_state: np.random.RandomState
-            random_state which will be used for drawing images from the validation data
     """
 
     def __init__(self: 'Evaluator',
                  data_path: str,
-                 model: keras.Model,
-                 random_state: np.random.RandomState):
+                 model: keras.Model):
         self.images_path = os.path.join(data_path, 'images')
         self.annotations_path = os.path.join(data_path, 'annotation-small.json')
         self.coco = COCO(self.annotations_path)
-
         self.model = model
 
-        if isinstance(random_state, np.random.RandomState):
-            self.random_state = random_state
-        else:
-            self.random_state = np.random.RandomState()
-
-    def evaluate(self):
-        # TODO
-        print('Not implemented yet!')
-
-    def load_random_batch(self, batch_size: int = 16):
-        """Loads a random batch of coco annotated images.
+    def evaluate(self, predictions):
+        """Performs the evaluation.
 
         # Arguments:
-            batch_size: int
-                Amount of images to draw
-
-        # Returns:
-            array of img objects
+            predictions: [obj]
+                list of coco annotated predictions
         """
-        image_ids = self.coco.getImgIds()
-        random_ids = self.random_state.choice(image_ids, batch_size).tolist()
-        images = self.coco.loadImgs(random_ids)
-        return images
+        results = self.coco.loadRes(predictions)
+        coco_eval = COCOeval(self.coco, results, 'segm')
+        coco_eval.evaluate()
+        coco_eval.accumulate()
+        coco_eval.summarize()
 
-    def get_random_prediction(self, batch_size: int = 4):
-        """Gets predictions for <batch_size> random images.
+    def save_predictions_as_json(self, prediction_file_name: str, batch_size: int = 8):
+        images_ids = self.coco.getImgIds()
+        n_batches = int(np.ceil(len(images_ids) / batch_size))
 
-        # Arguments:
-            batch_size: int
-                amount of images to draw
+        annotations = []
+        for i in range(n_batches):
+            batch_start = i * batch_size
+            batch_end = min((i + 1) * batch_size, len(images_ids))
+            batch_ids = images_ids[batch_start:batch_end]
 
-        # Returns
-            Tuple of images (3-channeled), truth and prediction (both 1-channeled)
-        """
-        image_annotations = self.load_random_batch(batch_size)
+            images_annotations = self.coco.loadImgs(batch_ids)
+            images = np.array([image_as_array(self.images_path, i) for i in images_annotations])
 
-        images, truth, predictions = [], [], []
-        for image_annotation in image_annotations:
-            image = self._image_as_array(image_annotation)
-            label = self._label_as_array(image_annotation)
-            prediction = self._prediction_as_array(image)
+            predictions = self.model.predict(images / 255, batch_size=batch_size)
+            predictions_annotation = self._masks_to_annotations(batch_ids, predictions)
 
-            images.append(image)
-            truth.append(label)
-            predictions.append(prediction)
+            annotations.extend(predictions_annotation)
+            print("Finished %.2f %%" % (100 * i / n_batches))
+        self._save_all_annotations(prediction_file_name, annotations)
 
-        return images, truth, predictions
+    def _masks_to_annotations(self, image_ids, masks):
+        annotations = []
+        for ID, m in zip(image_ids, masks):
+            m = m.astype(np.uint8)
+            m = np.squeeze(m)
+            n, labels = cv2.connectedComponents(m)
+            for i in range(1, n + 1):
+                label = (labels == i).astype(np.uint8)
+                annotations.append(self._mask_to_annotation(ID, label))
 
-    def _image_as_array(self, image_annotation):
-        path = os.path.join(self.images_path, image_annotation['file_name'])
-        img = cv2.imread(path)
-        return self._down_sample(img)
+        return annotations
 
-    def _label_as_array(self, image_annotation):
-        annotations = self.coco.loadAnns(self.coco.getAnnIds(image_annotation['id']))
-        return self._mask_from_annotation(annotations, (image_annotation['height'], image_annotation['width']))
+    def _mask_to_annotation(self, image_id, label):
+        label = np.asfortranarray(label, dtype=np.uint8)
+        rle = mask.encode(label)
+        rle['counts'] = rle['counts'].decode('UTF-8')
+        return {
+            'image_id': image_id,
+            'category_id': 100,
+            'score': 1,
+            'segmentation': rle,
+            'bbox': mask.toBbox(rle).tolist()
+        }
 
-    def _prediction_as_array(self, image):
-        image = image.reshape((1, *image.shape)) / 255
-        prediction = self.model.predict(image)
-        return np.squeeze(prediction)
-
-    def _down_sample(self, image):
-        # shape: (height, width, channels)
-        image = np.delete(image, list(range(1, image.shape[0], 2)), axis=0)
-        image = np.delete(image, list(range(1, image.shape[1], 2)), axis=1)
-        return image
-
-    def _mask_from_annotation(self, annotation, shape):
-        label = np.zeros(shape)
-        for a in annotation:
-            rle = mask.frPyObjects(a['segmentation'], *shape)
-            m = np.squeeze(mask.decode(rle))
-            label = np.logical_or(label, m)
-        return self._down_sample(label)
+    def _save_all_annotations(self, prediction_file_path, annotations):
+        path, _ = os.path.split(prediction_file_path)
+        if not os.path.exists(path):
+            os.mkdir(path)
+        with open(prediction_file_path, 'w+') as prediction_file:
+            prediction_file.truncate(0)
+            prediction_file.write(json.dumps(annotations))

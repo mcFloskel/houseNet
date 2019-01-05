@@ -6,6 +6,8 @@ from keras.utils import Sequence
 from pycocotools import mask
 from pycocotools.coco import COCO
 
+from util.array_utils import down_size_batch
+
 
 class DataLoader(Sequence):
     """Loads data/labels from a coco annotated dataset.
@@ -93,8 +95,8 @@ class DataLoader(Sequence):
             labels[i,] = y
 
         if self.down_sample_factor > 1:
-            data = self._down_sample(data)
-            labels = self._down_sample(labels)
+            data = down_size_batch(data)
+            labels = down_size_batch(labels)
 
         return data, labels
 
@@ -115,12 +117,6 @@ class DataLoader(Sequence):
             m = np.squeeze(mask.decode(rle))
             labels = np.logical_or(labels, m)
         return labels.reshape((*labels.shape, 1))
-
-    def _down_sample(self, batch):
-        # shape: (batch_size, height, width, channels)
-        batch = np.delete(batch, list(range(1, batch.shape[1], self.down_sample_factor)), axis=1)
-        batch = np.delete(batch, list(range(1, batch.shape[2], self.down_sample_factor)), axis=2)
-        return batch
 
 
 class NumpyDataLoader(Sequence):
