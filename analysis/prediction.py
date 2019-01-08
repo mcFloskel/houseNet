@@ -4,13 +4,11 @@ import os
 import numpy as np
 
 import keras
-from keras.engine.saving import load_model
 from pycocotools import mask
 from pycocotools.coco import COCO
 
+from networks.uNet3 import UNet3
 from util.array_utils import down_size_image, image_as_array
-from util.losses import dice
-from util.metrics import intersection_over_union
 
 
 class Predictor:
@@ -109,13 +107,15 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.read(os.path.join(os.path.pardir, 'config.ini'))
 
+    # Build all paths
+    path_to_model = os.path.join(config['DIRECTORIES']['models'], 'uNet.50-0.8445.hdf5')
+    path_to_data = config['DIRECTORIES']['val_data']
+
     # Load model
-    PATH_TO_MODEL = os.path.join(config['DIRECTORIES']['models'], 'my_rNet.hdf5')
-    custom_objects = {'dice': dice, 'intersection_over_union': intersection_over_union}
-    my_model = load_model(PATH_TO_MODEL, custom_objects=custom_objects)
+    my_model = UNet3()
+    my_model.load_weights(path_to_model)
 
     # Predict and visualize
-    PATH_TO_DATA = config['DIRECTORIES']['val_data']
-    evaluator = Predictor(PATH_TO_DATA, my_model, np.random.RandomState(2013))
+    evaluator = Predictor(path_to_data, my_model, np.random.RandomState(2013))
     data = evaluator.get_random_prediction()
     visualize(*data)

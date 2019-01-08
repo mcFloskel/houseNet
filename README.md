@@ -46,9 +46,9 @@ An update for the wiki is also planned.
 Go to [issues](https://github.com/mcFloskel/houseNet/issues) to see a list of open tasks.
 
 ## Example
-Below you can see an example prediction of the [rNet](https://github.com/mcFloskel/houseNet/blob/master/networks/rNet.py) architecture.
+Below you can see an example prediction of the [UNet](https://github.com/mcFloskel/houseNet/blob/master/networks/uNet3.py) architecture.
 (Left to right: original image, ground truth, prediction)
 
 <p align="center">
-  <img src="https://github.com/mcFloskel/houseNet/blob/master/images/prediction_rnet.png"/>
+  <img src="https://github.com/mcFloskel/houseNet/blob/master/images/prediction_uNet.png"/>
 </p>
