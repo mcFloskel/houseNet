@@ -17,18 +17,16 @@ def randomize_weights(model):
 
 def get_effective_receptive_field(model: Model,
                                   runs: int = 20,
-                                  randomize: bool = True):
+                                  randomize_model: bool = True):
     """Calculates the effective receptive field for a given neural network architecture.
     The values are normalized after calculation for better visualization.
-
-    NOTE: This currently only works with untrained networks.
 
     # Arguments:
         model: Keras model
             a keras model
         runs: int
-            number of runs for averaging (can be set to 1 if randomize=False)
-        randomize:
+            number of runs for averaging
+        randomize_model:
             Randomizes the model weights for each run (set this to False for trained models)
 
     # Returns:
@@ -44,18 +42,15 @@ def get_effective_receptive_field(model: Model,
     initial = np.zeros(output_shape, dtype=np.float32)
     initial[:, center_x, center_y, :] = 1
     gradients = tf.gradients(ys=model.output, xs=model.input, grad_ys=initial)
-    gradients = [g for g in gradients if g is not None]
-
-    input_placeholder = np.ones(input_shape, dtype=np.float32)
 
     session = K.get_session()
 
     receptive_field = np.zeros(input_shape[1:])
     print('Calculating gradient ...')
     for i in range(runs):
-        if randomize:
+        if randomize_model:
             randomize_weights(model)
-        grad = session.run(gradients, feed_dict={model.input.name: input_placeholder})
+        grad = session.run(gradients, feed_dict={model.input.name: np.random.rand(*input_shape)})
         receptive_field += grad[0][0]
         print('Finished run %d of %d' % (i + 1, runs))
 
