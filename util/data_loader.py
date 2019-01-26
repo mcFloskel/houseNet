@@ -1,4 +1,6 @@
 import os
+from typing import Tuple
+
 import cv2
 import numpy as np
 
@@ -214,3 +216,45 @@ class NumpyDataLoader(Sequence):
     def on_epoch_end(self):
         if self.shuffle:
             self.random_state.shuffle(self.image_ids)
+
+
+class RandomLoader(Sequence):
+    """Loads a random batch of data points with a given shape.
+    This can be used for analyzing, like calculating the effective receptive field with random input.
+    No labels are generated.
+
+    # Arguments
+        dataset_size: int
+            desired amount of data points
+        batch_size: int
+            amount of data points which are processed as one batch
+        data_shape: Tuple
+            shape of the data points (channels last)
+        random_state: np.random.RandomState
+            state which will be used for data point generation
+    """
+
+    def __init__(self: 'RandomLoader',
+                 dataset_size: int = 100,
+                 batch_size: int = 32,
+                 data_shape: Tuple = (150, 150, 3),
+                 random_state: np.random.RandomState = None):
+        self.dataset_size = dataset_size
+        self.batch_size = batch_size
+        self.data_shape = data_shape
+
+        if isinstance(random_state, np.random.RandomState):
+            self.random_state = random_state
+        else:
+            self.random_state = np.random.RandomState()
+        self._state = self.random_state.get_state()  # Used for resetting random state after epoch
+
+    def __len__(self):
+        return self.dataset_size
+
+    def __getitem__(self, index):
+        data = self.random_state.rand(self.batch_size, *self.data_shape)
+        return data, None
+
+    def on_epoch_end(self):
+        self.random_state.set_state(self._state)

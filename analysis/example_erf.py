@@ -1,8 +1,12 @@
+import configparser
+import os
+
 import cv2
 import numpy as np
 
 from analysis.effective_receptive_field import get_effective_receptive_field
 from networks.dnet import DNet
+from util.data_loader import DataLoader
 
 """Example of calculating the effective receptive field and visualizing it with opencv.
 """
@@ -54,6 +58,14 @@ def visualize_receptive_field(receptive_field, up_scale_factor=1, grey_scale=Fal
 
 
 if __name__ == '__main__':
+    config = configparser.ConfigParser()
+    config.read(os.path.join(os.path.pardir, 'config.ini'))
+    path_to_dataset = config['DIRECTORIES']['val_data']
+    data_loader = DataLoader(data_directory=path_to_dataset,
+                             batch_size=1,
+                             augment=False,
+                             down_sample_factor=2)
+
     net = DNet()
-    rf = get_effective_receptive_field(net)
+    rf = get_effective_receptive_field(net, data_loader=data_loader)
     visualize_receptive_field(rf, up_scale_factor=4)
