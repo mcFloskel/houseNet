@@ -6,6 +6,15 @@ from networks.blocks.conv_block import convolution_block
 
 
 def UNet_ASPP():
+    """ UNet-like architecture with three pooling steps.
+    The lowest two convolutions have been replaced with an aspp block.
+    The amount of filters in some layers have been lowered in comparison to the UNet3 architecture
+    to achieve a similar parameter size as the other networks.
+    This network processes data with an input shape of (150, 150, 3) and an output shape of (150, 150, 1).
+
+    # Returns:
+        A Keras Model
+    """
     input_layer = Input(shape=(150, 150, 3), name='input_layer')
     input_padded = ZeroPadding2D(name='input_padded')(input_layer)
     block_top = convolution_block(input_layer=input_padded, filters=32, name='block_top')
