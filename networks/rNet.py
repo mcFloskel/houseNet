@@ -51,15 +51,15 @@ def RNet():
     conv_block_1 = convolution_block(res_block_10, filters=64, dilation_rate=2, name='conv_block_1')
     conv_block_2 = convolution_block(conv_block_1, filters=64, name='conv_block_2')
 
-    pre_up_1 = convolution_block(conv_block_2, filters=64, name='pre_up_1')
+    pre_up_1 = convolution_block(conv_block_2, filters=128, name='pre_up_1')
     up_1 = UpSampling2D(size=2, name='up_1')(pre_up_1)
     skip_1 = Concatenate(name='skip_1')([res_block_4, up_1])
 
-    pre_up_2 = convolution_block(skip_1, filters=64, name='pre_up_2')
+    pre_up_2 = convolution_block(skip_1, filters=128, name='pre_up_2')
     up_2 = UpSampling2D(size=2, name='up_2')(pre_up_2)
     skip_2 = Concatenate(name='skip_2')([res_block_2, up_2])
 
-    pre_up_3 = convolution_block(skip_2, filters=64, name='pre_up_3')
+    pre_up_3 = convolution_block(skip_2, filters=128, name='pre_up_3')
     up_3 = UpSampling2D(size=2, name='up_3')(pre_up_3)
     skip_3 = Concatenate(name='skip_3')([res_block_1, up_3])
 

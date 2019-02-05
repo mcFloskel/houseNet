@@ -1,5 +1,6 @@
+import keras.backend as K
 from keras.engine import Layer
-from keras.layers import Concatenate
+from keras.layers import Add, Conv2D
 
 from networks.blocks.conv_block import convolution_block
 
@@ -12,7 +13,6 @@ def res_block(input_layer: Layer,
               padding: str = 'same',
               dilation_rate: int = 1):
     """Generate a residual block which also allows dilation.
-
 
     # Arguments:
         input_layer: Layer
@@ -34,6 +34,9 @@ def res_block(input_layer: Layer,
         A Keras Layer
     """
 
+    input_filters = K.int_shape(input_layer)[-1]  # channels last
+    if input_filters != filters:
+        input_layer = Conv2D(filters=filters, kernel_size=1, name=name + '_input_reshaped')(input_layer)
     block = convolution_block(input_layer,
                               filters=filters,
                               kernel_size=kernel_size,
@@ -41,4 +44,4 @@ def res_block(input_layer: Layer,
                               padding=padding,
                               dilation_rate=dilation_rate,
                               name=name)
-    return Concatenate(name=name + '_output')([input_layer, block])
+    return Add(name=name + '_output')([input_layer, block])
