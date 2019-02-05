@@ -8,7 +8,6 @@ from util.data_loader import RandomLoader
 
 
 def randomize_weights(model):
-    print('Randomizing ...')
     session = K.get_session()
     for layer in model.layers:
         for v in layer.__dict__:
