@@ -50,5 +50,5 @@ Below you can see an example prediction of the [UNet](https://github.com/mcFlosk
 (Left to right: original image, ground truth, prediction)
 
 <p align="center">
-  <img src="https://github.com/mcFloskel/houseNet/blob/master/images/prediction_uNet.png"/>
+  <img src="https://github.com/mcFloskel/houseNet/blob/master/images/predictions/prediction_uNet.png"/>
 </p>
