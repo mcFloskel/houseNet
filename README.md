@@ -1,4 +1,5 @@
 # houseNet
+This is a project I did during my Master program.
 
 ## Overview
 This neural network project was created to evaluate the effect of dilated convolutions on a semantic segmentation task.
@@ -39,11 +40,9 @@ predictions = /path/to/predictions/
 ```
 
 ## Current state
-A lot of architectures have already been tested and the most promising have been uploaded.
-The current work is focused on creating a meaningful evaluation.
-An update for the wiki is also planned.
-
-Go to [issues](https://github.com/mcFloskel/houseNet/issues) to see a list of open tasks.
+The project is finished and the evaluation can be found [here](https://github.com/mcFloskel/houseNet/wiki/Evaluation).
+It is currently not planned to test further architectures in the near future.
+However I am open for any suggestions for improvements.
 
 ## Example
 Below you can see an example prediction of the [UNet](https://github.com/mcFloskel/houseNet/blob/master/networks/uNet3.py) architecture.
